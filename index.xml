@@ -1,9 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Himalaya&#39;s Dev Journal</title>
-        <link>http://localhost:1313/</link>
-        <description>Personal journal, game dev blog, and project portfolio</description>
-        <generator>Hugo -- gohugo.io</generator><language>en-us</language>
-            <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-        </channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Himalaya's Dev Journal</title><link>https://histty.in/</link><description>Personal journal, game dev blog, and project portfolio</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><atom:link href="https://histty.in/index.xml" rel="self" type="application/rss+xml"/></channel></rss>
