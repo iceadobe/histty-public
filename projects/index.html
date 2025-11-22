@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=53521&amp;path=livereload" data-no-instant defer></script>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="robots" content="noodp" />
-        <title>Projects - Himalaya&#39;s Dev Journal</title><meta name="Description" content="Portfolio of games, tools, and experiments"><meta property="og:url" content="http://localhost:1313/projects/">
+        <title>Projects - Himalaya&#39;s Dev Journal</title><meta name="Description" content="Portfolio of games, tools, and experiments"><meta property="og:url" content="http://localhost:53521/projects/">
   <meta property="og:site_name" content="Himalaya&#39;s Dev Journal">
   <meta property="og:title" content="Projects">
   <meta property="og:description" content="Portfolio of games, tools, and experiments">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="website">
-    <meta property="og:image" content="http://localhost:1313/logo.png">
+    <meta property="og:image" content="http://localhost:53521/logo.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="http://localhost:1313/logo.png">
+  <meta name="twitter:image" content="http://localhost:53521/logo.png">
   <meta name="twitter:title" content="Projects">
   <meta name="twitter:description" content="Portfolio of games, tools, and experiments">
-      <meta name="twitter:site" content="@yourusername">
 <meta name="application-name" content="Himalaya&#39;s Dev Journal">
 <meta name="apple-mobile-web-app-title" content="Himalaya&#39;s Dev Journal">
 <meta name="referrer" content="no-referrer" /><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:1313/projects/" /><link rel="alternate" href="/projects/index.xml" type="application/rss+xml" title="Himalaya&#39;s Dev Journal">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://localhost:53521/projects/" /><link rel="alternate" href="/projects/index.xml" type="application/rss+xml" title="Himalaya&#39;s Dev Journal">
     <link rel="feed" href="/projects/index.xml" type="application/rss+xml" title="Himalaya&#39;s Dev Journal"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/fontawesome-free/css/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript></head>
     <body data-header-desktop="fixed" data-header-mobile="auto"><script>
           const query = window.matchMedia('(prefers-color-scheme: dark)');
           function applyTheme() {
-            let theme = window.localStorage?.getItem('theme') || 'auto';
+            let theme = window.localStorage?.getItem('theme') || 'dark';
             let isDark = theme === 'dark' || (theme === 'auto' && query.matches);
             document.body.setAttribute('theme', isDark? 'dark' : 'light');
             document.body.setAttribute('cfg-theme', theme);
@@ -41,10 +40,17 @@
         <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
     <div class="header-wrapper">
         <div class="header-title">
-            <a href="/" title="Himalaya&#39;s Dev Journal">Himalaya</a>
+            <a href="/" title="Himalaya&#39;s Dev Journal"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/images/histty-logo.png"
+        data-srcset="/images/histty-logo.png, /images/histty-logo.png 1.5x, /images/histty-logo.png 2x"
+        data-sizes="auto"
+        alt="/images/histty-logo.png"
+        title="/images/histty-logo.png" />histty.in</a>
         </div>
         <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/"> Home </a><a class="menu-item" href="/blog/"> Blog </a><a class="menu-item" href="/logs/"> Logs </a><a class="menu-item active" href="/projects/"> Projects </a><a class="menu-item" href="/now/"> Now </a><a class="menu-item" href="/resume/"> Resume </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+            <div class="menu-inner"><a class="menu-item" href="/"> Home </a><a class="menu-item active" href="/projects/"> Projects </a><a class="menu-item" href="/blog/"> Blog </a><a class="menu-item" href="/logs/"> Logs </a><a class="menu-item" href="/now/"> Now </a><a class="menu-item" href="/resume/"> Resume </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
                         <input type="text" placeholder="Search titles or contents..." id="search-input-desktop">
                         <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="Search">
                             <i class="fas fa-search fa-fw" aria-hidden="true"></i>
@@ -64,7 +70,14 @@
     <div class="header-container">
         <div class="header-wrapper">
             <div class="header-title">
-                <a href="/" title="Himalaya&#39;s Dev Journal">Himalaya</a>
+                <a href="/" title="Himalaya&#39;s Dev Journal"><img
+        class="lazyload logo"
+        src="/svg/loading.min.svg"
+        data-src="/images/histty-logo.png"
+        data-srcset="/images/histty-logo.png, /images/histty-logo.png 1.5x, /images/histty-logo.png 2x"
+        data-sizes="auto"
+        alt="/images/histty-logo.png"
+        title="/images/histty-logo.png" />histty.in</a>
             </div>
             <div class="menu-toggle" id="menu-toggle-mobile">
                 <span></span><span></span><span></span>
@@ -86,7 +99,7 @@
                     <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
                         Cancel
                     </a>
-                </div><a class="menu-item" href="/" title="">Home</a><a class="menu-item" href="/blog/" title="">Blog</a><a class="menu-item" href="/logs/" title="">Logs</a><a class="menu-item" href="/projects/" title="">Projects</a><a class="menu-item" href="/now/" title="">Now</a><a class="menu-item" href="/resume/" title="">Resume</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                </div><a class="menu-item" href="/" title="">Home</a><a class="menu-item" href="/projects/" title="">Projects</a><a class="menu-item" href="/blog/" title="">Blog</a><a class="menu-item" href="/logs/" title="">Logs</a><a class="menu-item" href="/now/" title="">Now</a><a class="menu-item" href="/resume/" title="">Resume</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
                 <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
             </a></div>
     </div>
@@ -99,50 +112,12 @@
                 <div class="container"><div class="page" itemscope itemtype="http://schema.org/CollectionPage"><h1 class="single-title" itemprop="name headline">Projects</h1><div class="content" id="content">
         <p>A collection of my games, tools, and experimental projects. These range from game jam entries to productivity tools I&rsquo;ve built to scratch my own itch.</p>
 <p>Check out the featured projects below, or browse the full list.</p>
+<hr>
 
-    </div><div class="projects-list"><h2>Featured Projects</h2>
-        <div class="projects-grid featured"><div class="project-card featured">
-    <div class="project-card-header">
-        <h3 class="project-title">
-            <a href="/projects/sample-game/">Dungeon Crawler: Roguelike Adventure</a>
-        </h3><span class="status-badge status-in-progress">In-Progress</span></div><p class="project-summary">A procedurally generated roguelike dungeon crawler with turn-based combat and permadeath</p><div class="project-tech"><span class="tech-tag">Godot</span><span class="tech-tag">GDScript</span><span class="tech-tag">Aseprite</span></div><div class="project-card-footer">
-        <a href="/projects/sample-game/" class="read-more">Read more →</a>
-
-        <div class="project-links-inline"><a href="https://github.com/yourusername/dungeon-crawler" target="_blank" rel="noopener noreferrer" title="View Source">
-                <i class="fab fa-github fa-fw"></i>
-            </a><a href="https://yourusername.itch.io/dungeon-crawler" target="_blank" rel="noopener noreferrer" title="Live Demo">
-                <i class="fas fa-external-link-alt fa-fw"></i>
-            </a></div>
-    </div>
-</div></div><h2>All Projects</h2>
-        <div class="projects-grid"><div class="project-card featured">
-    <div class="project-card-header">
-        <h3 class="project-title">
-            <a href="/projects/sample-game/">Dungeon Crawler: Roguelike Adventure</a>
-        </h3><span class="status-badge status-in-progress">In-Progress</span></div><p class="project-summary">A procedurally generated roguelike dungeon crawler with turn-based combat and permadeath</p><div class="project-tech"><span class="tech-tag">Godot</span><span class="tech-tag">GDScript</span><span class="tech-tag">Aseprite</span></div><div class="project-card-footer">
-        <a href="/projects/sample-game/" class="read-more">Read more →</a>
-
-        <div class="project-links-inline"><a href="https://github.com/yourusername/dungeon-crawler" target="_blank" rel="noopener noreferrer" title="View Source">
-                <i class="fab fa-github fa-fw"></i>
-            </a><a href="https://yourusername.itch.io/dungeon-crawler" target="_blank" rel="noopener noreferrer" title="Live Demo">
-                <i class="fas fa-external-link-alt fa-fw"></i>
-            </a></div>
-    </div>
-</div><div class="project-card">
-    <div class="project-card-header">
-        <h3 class="project-title">
-            <a href="/projects/sample-tool/">DevLog CLI: Static Site Generator for Devlogs</a>
-        </h3><span class="status-badge status-completed">Completed</span></div><p class="project-summary">A command-line tool to quickly create and manage development logs for projects</p><div class="project-tech"><span class="tech-tag">Go</span><span class="tech-tag">Hugo</span><span class="tech-tag">Markdown</span></div><div class="project-card-footer">
-        <a href="/projects/sample-tool/" class="read-more">Read more →</a>
-
-        <div class="project-links-inline"><a href="https://github.com/yourusername/devlog-cli" target="_blank" rel="noopener noreferrer" title="View Source">
-                <i class="fab fa-github fa-fw"></i>
-            </a></div>
-    </div>
-</div></div></div>
+    </div><div class="projects-list"><p>No projects yet. Check back soon!</p></div>
 </div></div>
             </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">xxxx</a></span></div>
+        <div class="footer-container"><div class="footer-line">All content © 2025 Himalaya Ghimire. All rights reserved.</div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"></div>
         </div>
     </footer></div>
 
