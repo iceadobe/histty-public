@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Notes on Himalaya&#39;s Dev Journal</title>
+    <link>http://localhost:1313/notes/</link>
+    <description>Recent content in Notes on Himalaya&#39;s Dev Journal</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Nov 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Daily Notes - November 22, 2025</title>
+      <link>http://localhost:1313/notes/2025-11-22-daily-notes/</link>
+      <pubDate>Sat, 22 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/notes/2025-11-22-daily-notes/</guid>
+      <description>Today&amp;rsquo;s learnings: Godot signals, A* pathfinding, and Go interfaces</description>
+    </item>
+  </channel>
+</rss>

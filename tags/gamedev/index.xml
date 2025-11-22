@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gamedev on Himalaya&#39;s Dev Journal</title>
+    <link>http://localhost:1313/tags/gamedev/</link>
+    <description>Recent content in Gamedev on Himalaya&#39;s Dev Journal</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 20 Nov 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/gamedev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>First Devlog: Starting My Roguelike Journey</title>
+      <link>http://localhost:1313/blog/first-devlog/</link>
+      <pubDate>Thu, 20 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/blog/first-devlog/</guid>
+      <description>Kicking off my first serious game project - a roguelike dungeon crawler. Here&amp;rsquo;s what I learned in week one.</description>
+    </item>
+    <item>
+      <title>Dungeon Crawler: Roguelike Adventure</title>
+      <link>http://localhost:1313/projects/sample-game/</link>
+      <pubDate>Sat, 15 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/projects/sample-game/</guid>
+      <description>A procedurally generated roguelike dungeon crawler with turn-based combat and permadeath</description>
+    </item>
+  </channel>
+</rss>
