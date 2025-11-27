@@ -1,1 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Logs on Himalaya's Dev Journal</title><link>https://histty.in/logs/</link><description>Recent content in Logs on Himalaya's Dev Journal</description><generator>Hugo</generator><language>en-us</language><atom:link href="https://histty.in/logs/index.xml" rel="self" type="application/rss+xml"/><item><title>Daily Logs - November 26, 2025</title><link>https://histty.in/logs/2025/11/2025-11-26-daily-notes/</link><pubDate>Wed, 26 Nov 2025 00:00:00 +0000</pubDate><guid>https://histty.in/logs/2025/11/2025-11-26-daily-notes/</guid><description>Godot signals, AI pathfinding, Itchh.io, and Go interfaces</description></item><item><title>Daily Logs - November 26, 2024</title><link>https://histty.in/logs/2024/11/2025-11-26-daily-notes/</link><pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate><guid>https://histty.in/logs/2024/11/2025-11-26-daily-notes/</guid><description>Godot signals, AI pathfinding, Itchh.io, and Go interfaces</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Logs on Himalaya's Dev Journal</title><link>https://histty.in/logs/</link><description>Recent content in Logs on Himalaya's Dev Journal</description><generator>Hugo</generator><language>en-us</language><atom:link href="https://histty.in/logs/index.xml" rel="self" type="application/rss+xml"/><item><title>November 26, 2025 — [Game] AI pathfinding and Godot signals</title><link>https://histty.in/logs/2025/11/2025-11-26/</link><pubDate>Wed, 26 Nov 2025 00:00:00 +0000</pubDate><guid>https://histty.in/logs/2025/11/2025-11-26/</guid><description>&lt;h2 id="notes"&gt;Notes&lt;/h2&gt;
+&lt;h3 id="godot-signals"&gt;Godot Signals&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Signals are Godot&amp;rsquo;s implementation of the observer pattern&lt;/li&gt;
+&lt;li&gt;Use &lt;code&gt;signal signal_name(param1, param2)&lt;/code&gt; to declare&lt;/li&gt;
+&lt;li&gt;Emit with &lt;code&gt;emit_signal(&amp;quot;signal_name&amp;quot;, arg1, arg2)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Connect with &lt;code&gt;object.connect(&amp;quot;signal_name&amp;quot;, self, &amp;quot;_on_signal_received&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Super useful for decoupling game systems (e.g., player health changes triggering UI updates)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="ai-pathfinding"&gt;AI Pathfinding&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Started implementing AI for enemy AI&lt;/li&gt;
+&lt;li&gt;Key insight: the heuristic function matters a lot for performance&lt;/li&gt;
+&lt;li&gt;Using Manhattan distance for grid-based movement (no diagonals)&lt;/li&gt;
+&lt;li&gt;Need to cache paths and only recalculate when player moves significantly&lt;/li&gt;
+&lt;li&gt;Found a great visualization tool: &lt;a href="https://qiao.github.io/PathFinding.js/visual/" target="_blank" rel="noopener noreffer "&gt;pathfinding.js&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="go-interfaces"&gt;Go Interfaces&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Interfaces in Go are implicit - no need to declare implementation&lt;/li&gt;
+&lt;li&gt;Any type that implements all methods automatically satisfies the interface&lt;/li&gt;
+&lt;li&gt;Keep interfaces small (often just 1-2 methods)&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Accept interfaces, return structs&amp;rdquo; is a common pattern&lt;/li&gt;
+&lt;li&gt;The empty interface &lt;code&gt;interface{}&lt;/code&gt; accepts any type (like &lt;code&gt;any&lt;/code&gt; in newer Go versions)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="random"&gt;Random&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Discovered &lt;a href="https://itch.io/devlogs" target="_blank" rel="noopener noreffer "&gt;itch.io&amp;rsquo;s devlog feature&lt;/a&gt; - might cross-post there&lt;/li&gt;
+&lt;li&gt;Need to set up a better note-taking workflow (currently using Obsidian + manual conversion)&lt;/li&gt;
+&lt;li&gt;Read an interesting article about roguelike design patterns&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="tomorrow"&gt;Tomorrow&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Implement basic AI pathfinding for enemies&lt;/li&gt;
+&lt;li&gt;Refactor player movement to use signals&lt;/li&gt;
+&lt;li&gt;Write up a proper blog post about system design&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>November 26, 2024 — [NONE] Not Much Today</title><link>https://histty.in/logs/2024/11/2025-11-26/</link><pubDate>Tue, 26 Nov 2024 00:00:00 +0000</pubDate><guid>https://histty.in/logs/2024/11/2025-11-26/</guid><description>Godot signals, AI pathfinding, Itchh.io, and Go interfaces</description></item></channel></rss>
