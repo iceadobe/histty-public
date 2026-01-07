@@ -13,7 +13,7 @@
 &lt;li&gt;Key insight: the heuristic function matters a lot for performance&lt;/li&gt;
 &lt;li&gt;Using Manhattan distance for grid-based movement (no diagonals)&lt;/li&gt;
 &lt;li&gt;Need to cache paths and only recalculate when player moves significantly&lt;/li&gt;
-&lt;li&gt;Found a great visualization tool: &lt;a href="https://qiao.github.io/PathFinding.js/visual/" target="_blank" rel="noopener noreffer "&gt;pathfinding.js&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Found a great visualization tool: &lt;a href="https://qiao.github.io/PathFinding.js/visual/"&gt;pathfinding.js&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="go-interfaces"&gt;Go Interfaces&lt;/h3&gt;
 &lt;ul&gt;
@@ -25,7 +25,7 @@
 &lt;/ul&gt;
 &lt;h3 id="random"&gt;Random&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;Discovered &lt;a href="https://itch.io/devlogs" target="_blank" rel="noopener noreffer "&gt;itch.io&amp;rsquo;s devlog feature&lt;/a&gt; - might cross-post there&lt;/li&gt;
+&lt;li&gt;Discovered &lt;a href="https://itch.io/devlogs"&gt;itch.io&amp;rsquo;s devlog feature&lt;/a&gt; - might cross-post there&lt;/li&gt;
 &lt;li&gt;Need to set up a better note-taking workflow (currently using Obsidian + manual conversion)&lt;/li&gt;
 &lt;li&gt;Read an interesting article about roguelike design patterns&lt;/li&gt;
 &lt;/ul&gt;
