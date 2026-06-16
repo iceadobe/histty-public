@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North Star Protocol | Principal Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b1120; color: #cbd5e1; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Focus Styles for Accessibility */
+        *:focus-visible {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        
+        /* Specific override for the sidebar items to look cleaner when focused via arrows */
+        .nav-item:focus-visible {
+            outline: none; /* We use a visual style class instead */
+            background-color: rgba(99, 102, 241, 0.2);
+            border-left: 3px solid #6366f1;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Top Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 h-16 flex-shrink-0 flex items-center justify-between px-4 lg:px-6 z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center shadow-lg shadow-indigo-900/50">
+                <i class="fa-solid fa-layer-group text-white text-sm"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight text-white leading-none">NORTH STAR</h1>
+                <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Principal Architect</p>
+            </div>
+        </div>
+        
+        <!-- Desktop Stats -->
+        <div class="hidden md:flex items-center gap-8 bg-slate-800/40 px-6 py-2 rounded-lg border border-slate-700/50">
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] text-slate-400 font-bold uppercase">Campaign Completion</span>
+                <span class="text-sm font-mono font-bold text-white" id="progress-text">0%</span>
+            </div>
+            <div class="w-48 h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+             <button onclick="toggleMobileConfig()" class="md:hidden p-2 text-slate-400 hover:text-white" tabindex="0"><i class="fa-solid fa-gear"></i></button>
+             <button onclick="resetData()" class="hidden md:block text-xs text-slate-500 hover:text-red-400 transition font-mono" tabindex="0">[RESET SYSTEM]</button>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        
+        <!-- Sidebar -->
+        <aside class="w-80 bg-slate-900 border-r border-slate-800 flex-col hidden md:flex overflow-y-auto custom-scrollbar z-20">
+            
+            <!-- CAMPAIGN CONFIGURATION -->
+            <div class="p-5 bg-slate-800/30 border-b border-slate-700 backdrop-blur-sm sticky top-0 z-10">
+                <h3 class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> Campaign Parameters
+                </h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1" for="start-date-input">Start Date</label>
+                        <input type="date" id="start-date-input" onchange="updateCampaignDate()" tabindex="0"
+                               class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-indigo-500 outline-none font-mono tracking-wide">
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-[10px] text-slate-500 uppercase font-bold mb-1" for="skipped-days-input">Skipped Days</label>
+                            <input type="number" id="skipped-days-input" value="0" min="0" onchange="updateCampaignDate()" tabindex="0"
+                                   class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-xs text-white focus:border-indigo-500 outline-none font-mono">
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="flex justify-between items-center mb-1">
+                             <span class="text-[10px] text-slate-500 uppercase font-bold">Current Status</span>
+                             <span class="text-xs font-bold text-indigo-400 font-mono" id="calculated-day-display">-</span>
+                        </div>
+                        <button id="btn-sync" onclick="jumpToToday()" tabindex="0" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold uppercase rounded transition shadow-lg shadow-indigo-900/20 focus:ring-2 focus:ring-indigo-400">
+                            Sync to Today
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Lists Container -->
+            <!-- We add a specific ID for keyboard delegation -->
+            <div id="sidebar-nav-container" class="p-4 space-y-8 flex-1 pb-20 outline-none" role="listbox" aria-label="Day Navigation">
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pl-2 border-l-2 border-blue-500">Phase 1: Foundation</h3>
+                    <div id="nav-phase-1" class="space-y-1"></div>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pl-2 border-l-2 border-purple-500">Phase 2: Scale</h3>
+                    <div id="nav-phase-2" class="space-y-1"></div>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 pl-2 border-l-2 border-emerald-500">Phase 3: Principal</h3>
+                    <div id="nav-phase-3" class="space-y-1"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Config Modal -->
+        <div id="mobile-config" class="absolute inset-0 bg-slate-900/95 z-50 hidden flex-col p-6 backdrop-blur-md md:hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold text-white">Campaign Settings</h2>
+                <button onclick="toggleMobileConfig()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs text-slate-500 uppercase font-bold mb-2">Start Date</label>
+                    <input type="date" id="mobile-start-date" onchange="syncMobileInputs()" 
+                           class="w-full bg-slate-800 border border-slate-700 rounded p-4 text-white outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-500 uppercase font-bold mb-2">Skipped Days</label>
+                    <input type="number" id="mobile-skipped-days" value="0" onchange="syncMobileInputs()"
+                           class="w-full bg-slate-800 border border-slate-700 rounded p-4 text-white outline-none">
+                </div>
+                 <button onclick="updateCampaignDate(); toggleMobileConfig(); jumpToToday()" class="w-full py-4 bg-indigo-600 text-white font-bold rounded-lg mt-4 shadow-xl">
+                    Sync & Jump to Today
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 bg-slate-950 flex flex-col relative overflow-hidden">
+            
+            <!-- Mobile Day Navigation -->
+            <div class="md:hidden bg-slate-900 p-4 border-b border-slate-800 flex items-center justify-between shrink-0 shadow-lg z-10">
+                <button onclick="changeDay(-1)" class="p-3 text-slate-400 active:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="text-center">
+                    <span id="mobile-day-display" class="font-bold font-mono text-white block text-lg">Day 1</span>
+                    <span id="mobile-status-display" class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest">Active</span>
+                </div>
+                <button onclick="changeDay(1)" class="p-3 text-slate-400 active:text-white"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-12 scroll-smooth" id="day-content">
+                <!-- Content Injected Here -->
+            </div>
+        </main>
+
+        <!-- Right Panel (Notes) -->
+        <aside class="w-96 bg-slate-900 border-l border-slate-800 hidden xl:flex flex-col p-8 overflow-y-auto shrink-0 shadow-2xl">
+            <div class="mb-10">
+                <h3 class="text-xs font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-lightbulb text-yellow-500"></i> Principal Insight
+                </h3>
+                <div class="bg-gradient-to-b from-slate-800 to-slate-800/50 p-6 rounded-lg border border-slate-700/50 shadow-inner">
+                    <i class="fa-solid fa-quote-left text-slate-600 mb-2"></i>
+                    <p id="note-display" class="text-sm text-slate-300 italic leading-relaxed font-serif">Select a day to view insights.</p>
+                </div>
+            </div>
+            
+            <div class="mt-auto">
+                <div class="p-5 bg-indigo-900/10 border border-indigo-500/20 rounded-lg">
+                    <h4 class="text-[10px] font-bold text-indigo-400 uppercase mb-2 tracking-widest">Architectural Focus</h4>
+                    <p id="focus-display" class="text-sm text-slate-300 font-medium">Loading...</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // --- 72-DAY PRINCIPAL DATASET ---
+        const planData = [
+            // PHASE 1: FOUNDATION & SCALABILITY
+            { day: 1, type: "DSA", topic: "Arrays & Hashing", tasks: ["Two Sum (LC 1) - O(n) Time/Space", "Longest Consecutive Seq (LC 128) - O(n) Logic", "Product Array Except Self (LC 238)"], article: "High Scalability: Start Here", link: "http://highscalability.com/start-here/", note: "Principal Tip: In interviews, explicitly mention the trade-off between Hash Collision handling and Memory overhead." },
+            { day: 2, type: "DSA", topic: "Arrays & Hashing", tasks: ["Group Anagrams (LC 49)", "Top K Frequent (LC 347) - Heap vs Bucket Sort", "Encode/Decode Strings (LC 271)"], article: "Discord: Storing Trillions of Messages", link: "https://discord.com/blog/how-discord-stores-trillions-of-messages", note: "Look at how Discord optimized for disk seeks. Data locality matters more than Big-O sometimes." },
+            { day: 3, type: "DSA", topic: "Two Pointers", tasks: ["3Sum (LC 15)", "Container With Most Water (LC 11)", "Trapping Rain Water (LC 42) [HARD]"], article: "Amazon: Avoiding Fallback", link: "https://aws.amazon.com/builders-library/avoiding-fallback-in-distributed-systems/", note: "Trapping Rain Water: Can you derive the O(1) space solution without pre-computing arrays?" },
+            { day: 4, type: "DSA", topic: "Sliding Window", tasks: ["Longest Substring No Repeats (LC 3)", "Min Window Substring (LC 76) [HARD]", "Sliding Window Max (LC 239) [HARD]"], article: "GitLab Database Incident Postmortem", link: "https://about.gitlab.com/blog/2017/02/10/postmortem-of-database-outage-of-january-31/", note: "Sliding Window Max: Using a Deque is O(n), but why? Explain Amortized Complexity." },
+            { day: 5, type: "DSA", topic: "Stack & Queue", tasks: ["Min Stack (LC 155)", "Daily Temperatures (LC 739) - Monotonic", "Largest Rectangle in Histogram (LC 84) [HARD]"], article: "Slack: Scaling Datastores", link: "https://slack.engineering/scaling-datastores-at-slack-with-vitess/", note: "Monotonic Stacks are pattern-heavy. Once you see the 'Next Greater Element' pattern, use a Stack." },
+            { day: 6, type: "Design", topic: "Rate Limiter", tasks: ["Define API: `allow_request(request_id)`", "Artifact: Redis Lua Script for Atomicity", "Trade-off: Sliding Log vs Token Bucket (Memory)", "Artifact: Capacity Plan for 100M RPM"], article: "Stripe: Rate Limiters", link: "https://stripe.com/blog/rate-limiters", note: "Don't just draw boxes. Define the exact bytes stored per user key in Redis." },
+            
+            // WEEK 2
+            { day: 7, type: "DSA", topic: "Binary Search", tasks: ["Search in Rotated Sorted Array (LC 33)", "Median of Two Sorted Arrays (LC 4) [HARD]", "Time Based KV Store (LC 981)"], article: "Martin Fowler: LMAX Architecture", link: "https://martinfowler.com/articles/lmax.html", note: "Mechanical Sympathy: Why is Binary Search bad for CPU caching? (Pointer chasing)." },
+            { day: 8, type: "DSA", topic: "Linked Lists", tasks: ["Reverse Nodes in k-Group (LC 25) [HARD]", "Copy List Random Pointer (LC 138)", "LRU Cache (LC 146) - Implementation"], article: "Uber: Schemaless Datastore", link: "https://eng.uber.com/schemaless-part-one/", note: "LRU Cache: A Principal Engineer implements this using a Doubly Linked List + HashMap in 15 mins clean." },
+            { day: 9, type: "DSA", topic: "Trees (Basics)", tasks: ["Invert Tree (LC 226)", "Diameter of Tree (LC 543)", "LCA of Binary Tree (LC 236)"], article: "Cloudflare: Counting Things", link: "https://blog.cloudflare.com/counting-things-a-lot-of-different-ways/", note: "Recursion depth can cause Stack Overflow in prod. Discuss Iterative DFS." },
+            { day: 10, type: "DSA", topic: "Trees (Advanced)", tasks: ["Max Path Sum (LC 124) [HARD]", "Serialize/Deserialize Tree (LC 297) [HARD]", "Validate BST (LC 98)"], article: "Netflix: Chaos Engineering", link: "https://netflixtechblog.com/chap-monocle-and-chaos-engineering-5d933c09772c", note: "Serialize Tree: How would you make the output payload minimal? (Varint encoding)." },
+            { day: 11, type: "DSA", topic: "Tries", tasks: ["Implement Trie (LC 208)", "Word Search II (LC 212) [HARD]", "Design Search Autocomplete (LC 642)"], article: "Google SRE: SLOs", link: "https://sre.google/sre-book/service-level-objectives/", note: "Tries are memory hogs. Discuss 'Radix Trees' or 'Succinct Data Structures' as optimization." },
+            { day: 12, type: "Design", topic: "Distributed KV Store", tasks: ["Artifact: Hash Ring Diagram with Virtual Nodes", "Define: Vector Clock Conflict Resolution Logic", "Trade-off: Quorum (N, R, W) tuning", "Deep Dive: Gossip Protocol Bandwidth"], article: "Amazon Dynamo Paper", link: "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf", note: "The Dynamo Paper is the bible. Read section 4.4 on Data Versioning carefully." },
+
+            // WEEK 3: HEAPS & CONCURRENCY INTRO
+            { day: 13, type: "DSA", topic: "Heaps", tasks: ["Kth Largest in Array (LC 215) - QuickSelect", "Find Median from Data Stream (LC 295) [HARD]", "Merge k Sorted Lists (LC 23)"], article: "Facebook TAO", link: "https://engineering.fb.com/2013/06/25/core-data/tao-the-power-of-the-graph/", note: "QuickSelect is O(n) average but O(n^2) worst case. How do we guard against worst case?" },
+            { day: 14, type: "DSA", topic: "Backtracking", tasks: ["Permutations (LC 46)", "N-Queens (LC 51) [HARD]", "Word Search (LC 79)"], article: "Falsehoods about Distributed Systems", link: "https://gist.github.com/joyent/node/wiki/Design-Distributed-Systems", note: "Backtracking is brute force. Always mention pruning the search space." },
+            { day: 15, type: "DSA", topic: "Java Concurrency", tasks: ["Print FooBar Alternately (LC 1115)", "Building H2O (LC 1117)", "The Dining Philosophers (LC 1226)"], article: "Segment: Goodbye Microservices", link: "https://segment.com/blog/goodbye-microservices/", note: "Understand `synchronized`, `ReentrantLock`, and `Semaphore` in Java." },
+            { day: 16, type: "DSA", topic: "Graph (BFS/DFS)", tasks: ["Number of Islands (LC 200)", "Rotting Oranges (LC 994)", "Word Ladder (LC 127) [HARD]"], article: "Instagram: Sharding IDs", link: "https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c", note: "Word Ladder is BFS. Why? Because we need the *shortest* path." },
+            { day: 17, type: "DSA", topic: "Graph (Topo Sort)", tasks: ["Course Schedule (LC 207)", "Course Schedule II (LC 210)", "Alien Dictionary (LC 269) [HARD]"], article: "Spotify: Scaling Backend", link: "https://engineering.atspotify.com/", note: "Kahn's Algorithm (Indegree) is easier to implement than DFS for cycle detection." },
+            { day: 18, type: "Design", topic: "Unique ID Generator", tasks: ["Artifact: Bit-layout of 64-bit ID", "Logic: Handling Clock Regression (NTP drift)", "Calculation: Years until overflow", "Trade-off: Sequence Server vs Local Generation"], article: "Twitter Snowflake Repo", link: "https://github.com/twitter-archive/snowflake/tree/snowflake-2010", note: "Why 41 bits for timestamp? Calculate (2^41) / (1000*60*60*24*365) = ~69 years." },
+
+            // PHASE 2: SCALABILITY & ADVANCED PATTERNS
+            { day: 19, type: "DSA", topic: "Advanced Graphs", tasks: ["Network Delay Time (LC 743) - Dijkstra", "Cheapest Flights K Stops (LC 787) - Bellman Ford", "Min Cost to Connect Points (LC 1584) - Prim/Kruskal"], article: "Basecamp: The Majestic Monolith", link: "https://m.signalvnoise.com/the-majestic-monolith/", note: "Dijkstra fails with negative weights. Bellman-Ford works but is slower." },
+            { day: 20, type: "DSA", topic: "Advanced Graphs", tasks: ["Redundant Connection (LC 684) - Union Find", "Number of Connected Components (LC 323)", "Accounts Merge (LC 721)"], article: "Backblaze: Hard Drive Stats", link: "https://www.backblaze.com/blog/backblaze-hard-drive-stats-q1-2023/", note: "Union-Find with 'Path Compression' and 'Union by Rank' is nearly O(1)." },
+            { day: 21, type: "DSA", topic: "1D DP", tasks: ["Climbing Stairs (LC 70)", "House Robber II (LC 213)", "Longest Palindromic Substring (LC 5)"], article: "Canva: Real-time Editing", link: "https://www.canva.dev/blog/engineering/real-time-collaborative-editing/", note: "Manacher's Algorithm solves Palindromes in O(n), but usually O(n^2) DP is acceptable." },
+            { day: 22, type: "DSA", topic: "1D DP", tasks: ["Decode Ways (LC 91)", "Coin Change (LC 322)", "Maximum Product Subarray (LC 152)"], article: "Pinterest: Sharding MySQL", link: "https://medium.com/@pinterest_engineering/sharding-pinterest-how-we-scaled-our-mysql-fleet-3f341e96ca6f", note: "Max Product Subarray: You must track min_so_far because multiplying two negatives makes a positive." },
+            { day: 23, type: "DSA", topic: "1D DP", tasks: ["Word Break (LC 139)", "Longest Increasing Subsequence (LC 300)", "Partition Equal Subset Sum (LC 416)"], article: "Google: Spanner", link: "https://research.google.com/archive/spanner.html", note: "LIS is O(nlogn) if you use Binary Search/Patience Sorting. O(n^2) is naive." },
+            { day: 24, type: "Design", topic: "Distributed Caching", tasks: ["Artifact: Consistent Hashing Ring Diagram", "Logic: Hot Key Mitigation (Local Cache)", "Deep Dive: Thundering Herd (Request Coalescing)", "Metric: Cache Hit Ratio Impact"], article: "Facebook: Scaling Memcache", link: "https://research.facebook.com/publications/memcached-at-facebook/", note: "Lease logic: Only one client fetches from DB, others wait or get stale data." },
+
+            // WEEK 5
+            { day: 25, type: "DSA", topic: "Intervals", tasks: ["Insert Interval (LC 57)", "Merge Intervals (LC 56)", "Non-overlapping Intervals (LC 435)"], article: "Cloudflare: WAF Architecture", link: "https://blog.cloudflare.com/", note: "Sort by Start Time. That's 90% of interval problems." },
+            { day: 26, type: "DSA", topic: "Intervals", tasks: ["Meeting Rooms II (LC 253)", "Minimum Interval to Include (LC 1851)", "Data Stream as Disjoint Intervals (LC 352)"], article: "LinkedIn: Kafka The Log", link: "https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying", note: "Meeting Rooms II is essentially finding the max overlap of intervals." },
+            { day: 27, type: "DSA", topic: "Greedy", tasks: ["Jump Game II (LC 45)", "Gas Station (LC 134)", "Partition Labels (LC 763)"], article: "Confluent: Exactly-Once Kafka", link: "https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/", note: "Greedy requires proof. If you can't prove it, stick to DP." },
+            { day: 28, type: "DSA", topic: "2D DP", tasks: ["Unique Paths (LC 62)", "Longest Common Subsequence (LC 1143)", "Best Time to Buy Stock Cooldown (LC 309)"], article: "Grab: Optimizing Dispatch", link: "https://engineering.grab.com/", note: "LCS is the core of `git diff`." },
+            { day: 29, type: "DSA", topic: "2D DP", tasks: ["Target Sum (LC 494)", "Edit Distance (LC 72) [HARD]", "Interleaving String (LC 97)"], article: "Uber: H3 Geo Index", link: "https://eng.uber.com/h3/", note: "Edit Distance: Delete, Insert, Replace. Draw the grid." },
+            { day: 30, type: "Design", topic: "Notification System", tasks: ["Artifact: RabbitMQ/Kafka Topic Partitioning", "Logic: Deduplication (Bloom Filter)", "Deep Dive: User Settings Schema (JSONB vs Table)", "Scaling: Fan-out Service"], article: "LinkedIn: Real-time Notifications", link: "https://engineering.linkedin.com/blog/2016/09/how-we-built-a-real-time-distributed-search-system", note: "Fan-out: Do you write to 1M user queues or do 1M users read 1 feed?" },
+            
+            // WEEK 6
+            { day: 31, type: "DSA", topic: "2D DP (Hard)", tasks: ["Burst Balloons (LC 312) [HARD]", "Regular Expression Matching (LC 10) [HARD]", "Distinct Subsequences (LC 115)"], article: "AWS Lambda: Firecracker", link: "https://aws.amazon.com/blogs/aws/firecracker-lightweight-virtualization-for-serverless-computing/", note: "Burst Balloons: Think in reverse. Which balloon bursts LAST?" },
+            { day: 32, type: "DSA", topic: "Bit Manipulation", tasks: ["Single Number (LC 136)", "Counting Bits (LC 338)", "Reverse Bits (LC 190)"], article: "Airbnb: Avoiding Double Payments", link: "https://medium.com/airbnb-engineering/avoiding-double-payments-in-a-distributed-payments-system-2981f6b070bb", note: "Idempotency keys are critical for avoiding double payments." },
+            { day: 33, type: "DSA", topic: "Bit Manipulation", tasks: ["Sum of Two Integers (LC 371)", "Missing Number (LC 268)", "Reverse Integer (LC 7)"], article: "Dropbox: Migrating from AWS", link: "https://dropbox.tech/infrastructure/atlas-our-journey-from-a-python-monolith-to-a-managed-platform", note: "Sum of Two Integers: a ^ b is sum without carry. (a & b) << 1 is carry." },
+            { day: 34, type: "DSA", topic: "Math & Geometry", tasks: ["Rotate Image (LC 48)", "Spiral Matrix (LC 54)", "Set Matrix Zeroes (LC 73)"], article: "Etsy: Deploying 50x/day", link: "https://www.etsy.com/codeascraft", note: "Matrix problems are often about index manipulation. Watch out for bounds." },
+            { day: 35, type: "DSA", topic: "Math & Geometry", tasks: ["Happy Number (LC 202)", "Pow(x, n) (LC 50)", "Max Points on a Line (LC 149) [HARD]"], article: "StackOverflow: Architecture", link: "https://nickcraver.com/blog/2016/02/17/stack-overflow-the-architecture-2016-edition/", note: "Pow(x,n) must be O(log n) using Binary Exponentiation." },
+            { day: 36, type: "Design", topic: "Proximity Service (Uber)", tasks: ["Artifact: QuadTree vs Geohash Structure", "Logic: Driver Location Update (WebSocket vs UDP)", "DB: Spatial Indexing (PostGIS)", "Scale: Sharding by City/Region"], article: "Uber: Marketplace Matching", link: "https://eng.uber.com/marketplace/", note: "UDP is lossy but fast. Is it okay to lose a driver update? Yes." },
+
+            // PHASE 3: PRINCIPAL & MASTERY
+            { day: 37, type: "DSA", topic: "Principal Review", tasks: ["Review: Trapping Rain Water", "Review: Word Ladder", "Review: LRU Cache"], article: "Google: Postmortem Culture", link: "https://sre.google/sre-book/postmortem-culture/", note: "Blameless Postmortems are the hallmark of a Senior/Principal culture." },
+            { day: 38, type: "DSA", topic: "Principal Review", tasks: ["Review: Median of Two Sorted Arrays", "Review: Merge k Sorted Lists", "Review: Max Path Sum"], article: "Twitch: Video Broadcasting", link: "https://blog.twitch.tv/en/tags/engineering/", note: "Understand the 'Why' behind every line of code." },
+            { day: 39, type: "DSA", topic: "Concurrency Deep Dive", tasks: ["Design a Bounded Blocking Queue (LC 1188)", "Web Crawler Multithreaded (LC 1242)", "Fizz Buzz Multithreaded (LC 1195)"], article: "Discord: Voice Architecture", link: "https://discord.com/blog/how-discord-handles-two-and-half-million-concurrent-voice-users", note: "In Java, use `wait()` and `notifyAll()` or `Condition` variables." },
+            { day: 40, type: "DSA", topic: "Java Internals", tasks: ["Implement HashMap", "Implement ArrayList", "Understand Garbage Collection (G1GC vs ZGC)"], article: "GitHub: How we use Git", link: "https://github.blog/", note: "How does HashMap handle collisions? (LinkedList -> RedBlackTree in Java 8)." },
+            { day: 41, type: "DSA", topic: "Mixed Practice", tasks: ["Random Hard", "Random Medium", "Random Medium"], article: "Microsoft: Azure Postmortems", link: "https://azure.microsoft.com/en-us/status/history/", note: "Test your adaptability. Pick problems you haven't seen." },
+            { day: 42, type: "Design", topic: "Chat System (WhatsApp)", tasks: ["Artifact: WebSocket Connection State Table", "Logic: Message Sync (Sequence ID)", "Deep Dive: End-to-End Encryption Key Exchange", "DB: Cassandra/ScyllaDB Schema"], article: "Discord Engineering Blog", link: "https://discord.com/category/engineering", note: "The hardest part is 'Last Seen' and 'Typing' indicators at scale." },
+            
+            // WEEK 8
+            { day: 43, type: "DSA", topic: "Mock Interview", tasks: ["Timed: 45 mins", "Problem: 1 Hard (Graph/DP)", "Speak Out Loud"], article: "Riot Games: Tech Blog", link: "https://technology.riotgames.com/", note: "Communication is 50% of the score." },
+            { day: 44, type: "DSA", topic: "Mock Interview", tasks: ["Timed: 45 mins", "Problem: 2 Mediums", "Focus: Clean Code"], article: "Auth0: JWT vs Sessions", link: "https://auth0.com/blog/json-web-token-signing-algorithms-overview/", note: "Variable naming matters. `i`, `j` is okay for loops, not for business logic." },
+            { day: 45, type: "DSA", topic: "Behavioral", tasks: ["Story: Conflict Resolution", "Story: Technical Failure", "Story: Delivering without Authority"], article: "Stripe: Idempotency", link: "https://stripe.com/blog/idempotency", note: "Use the STAR method. Result must be quantifiable." },
+            { day: 46, type: "DSA", topic: "Behavioral", tasks: ["Story: Mentorship", "Story: System Design Trade-off", "Story: Innovation"], article: "Krebs on Security", link: "https://krebsonsecurity.com/", note: "Show, don't tell. 'I mentored' < 'I promoted 2 juniors to senior'." },
+            { day: 47, type: "DSA", topic: "Mock Interview", tasks: ["Peer Mock (Pramp/System Design)", "Feedback Analysis"], article: "Heroku: 12 Factor App", link: "https://12factor.net/", note: "Take feedback gracefully." },
+            { day: 48, type: "Design", topic: "Web Crawler", tasks: ["Artifact: URL Frontier Architecture", "Logic: Politeness (Domain Throttling)", "Algo: Bloom Filter for Dedupe", "Scale: DNS Resolver Caching"], article: "Google: Original Architecture", link: "http://infolab.stanford.edu/~backrub/google.html", note: "DNS resolution is often the bottleneck in crawlers." },
+            
+            // WEEK 9
+            { day: 49, type: "DSA", topic: "Principal Ops", tasks: ["Task: Define SLO for 99.99% Availability", "Task: Calculate Error Budget", "Task: Write a Post-mortem template"], article: "Google: Borg Paper", link: "https://research.google.com/pubs/pub43438.html", note: "Availability = (Success / Total) * 100." },
+            { day: 50, type: "DSA", topic: "Principal Ops", tasks: ["Task: Database Migration Strategy (Zero Downtime)", "Task: Canary Deployment Pipeline Design"], article: "Shopify: High Availability", link: "https://shopify.engineering/", note: "Strangler Fig Pattern: Route 1% traffic to new system, verify, scale." },
+            { day: 51, type: "DSA", topic: "Security", tasks: ["Review: SQL Injection Prevention", "Review: XSS & CSRF", "Review: OAuth2 Flows"], article: "Netflix: Zuul Gateway", link: "https://netflixtechblog.com/open-sourcing-zuul-2-82ea476cb2b3", note: "Never trust user input. Sanitize everything." },
+            { day: 52, type: "DSA", topic: "Security", tasks: ["Review: JWT Structure & Security", "Review: HTTPS/TLS Handshake"], article: "Zoom: Encryption", link: "https://explore.zoom.us/en/security/", note: "Symmetric vs Asymmetric encryption." },
+            { day: 53, type: "DSA", topic: "Review", tasks: ["Review Weakest Topic", "Review Weakest Topic", "Rest"], article: "ByteByteGo: Database Locking", link: "https://blog.bytebytego.com/", note: "Optimistic Locking (Versioning) vs Pessimistic Locking (Select for Update)." },
+            { day: 54, type: "Design", topic: "Video Streaming (Netflix)", tasks: ["Artifact: CDN Geo-distribution", "Logic: Adaptive Bitrate (HLS/DASH)", "Deep Dive: Pre-signed URLs for Upload/Download"], article: "Netflix: Content Delivery", link: "https://netflixtechblog.com/", note: "Edge computing is key here." },
+
+            // WEEK 10
+            { day: 55, type: "DSA", topic: "Mock", tasks: ["System Design Mock (45m)", "Topic: Ticketmaster"], article: "AWS: DynamoDB Paper", link: "https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf", note: "Consistency is hard here. No double booking seats." },
+            { day: 56, type: "DSA", topic: "Mock", tasks: ["System Design Mock (45m)", "Topic: Dropbox/Google Drive"], article: "Facebook: Memcached", link: "https://research.facebook.com/publications/memcached-at-facebook/", note: "Block storage vs Object storage. Chunking files." },
+            { day: 57, type: "DSA", topic: "Mock", tasks: ["Coding Mock (Hard)", "Topic: DP/Graph"], article: "Martin Fowler: Microservices", link: "https://martinfowler.com/microservices/", note: "Don't panic if you get stuck. Clarify constraints." },
+            { day: 58, type: "DSA", topic: "Mock", tasks: ["Coding Mock (Hard)", "Topic: Array/String"], article: "OpenAI: GPT-3 Paper", link: "https://arxiv.org/abs/2005.14165", note: "Edge cases: Empty input, null input, max integer." },
+            { day: 59, type: "DSA", topic: "Review", tasks: ["Cheatsheet: Latency Numbers", "Cheatsheet: Powers of 2", "Cheatsheet: HTTP Status Codes"], article: "Eugene Yan: LLM Patterns", link: "https://eugeneyan.com/writing/llm-patterns/", note: "L1 Cache: 1ns. RAM: 100ns. SSD: 100us. Network: 150ms." },
+            { day: 60, type: "Design", topic: "News Feed (Facebook)", tasks: ["Artifact: Feed Generation Pipeline", "Trade-off: Pull vs Push (Fan-out)", "Scale: Celebrity Handling"], article: "Facebook: Feed Architecture", link: "https://engineering.fb.com/", note: "Hybrid approach: Push for normal users, Pull for celebrities." },
+            
+            // WEEK 11
+            { day: 61, type: "DSA", topic: "Final Polish", tasks: ["Review: Trie Implementation", "Review: Union Find Implementation"], article: "Chip Huyen: Real-time ML", link: "https://huyenchip.com/", note: "Muscle memory must be 100%." },
+            { day: 62, type: "DSA", topic: "Final Polish", tasks: ["Review: Dijkstra Implementation", "Review: Topological Sort Implementation"], article: "Google: ML Design Patterns", link: "https://developers.google.com/machine-learning/guides/rules-of-ml", note: "Can you write it without syntax errors in Notepad?" },
+            { day: 63, type: "DSA", topic: "Final Polish", tasks: ["Review: QuickSort/MergeSort", "Review: Binary Search Templates"], article: "Thoughtworks: Tech Radar", link: "https://www.thoughtworks.com/radar", note: "Know the partition logic for QuickSort." },
+            { day: 64, type: "DSA", topic: "Final Polish", tasks: ["Review: Segment Tree (Optional)", "Review: Fenwick Tree (Optional)"], article: "Amazon: Leadership Principles", link: "https://www.amazon.jobs/en/principles", note: "Only for top-tier implementations (Google L5/L6)." },
+            { day: 65, type: "DSA", topic: "Rest", tasks: ["Sleep", "Exercise", "Confidence Building"], article: "Atlassian: Values", link: "https://www.atlassian.com/company/values", note: "Mental state > Knowledge at this point." },
+            { day: 66, type: "Design", topic: "Metrics System", tasks: ["Artifact: Data Model (Tags/Labels)", "DB: TSDB (Influx/Prometheus) Internals", "Logic: Downsampling & Retention"], article: "Prometheus Architecture", link: "https://prometheus.io/docs/introduction/overview/", note: "Write-heavy. LSM Trees (Cassandra) or TSDB specific storage." },
+            
+            // WEEK 12: THE SUMMIT
+            { day: 67, type: "DSA", topic: "Launch Prep", tasks: ["Resume Polish", "LinkedIn Update", "Network Reachout"], article: "Canva: Engineering Culture", link: "https://www.canva.dev/blog/", note: "Sell your impact, not your tenure." },
+            { day: 68, type: "DSA", topic: "Launch Prep", tasks: ["Company Research: Canva", "Company Research: Atlassian"], article: "Google: Tech Dev Guide", link: "https://techdevguide.withgoogle.com/", note: "Know their values. Know their stack." },
+            { day: 69, type: "DSA", topic: "Launch Prep", tasks: ["Company Research: Google", "Company Research: Amazon"], article: "System Design Primer", link: "https://github.com/donnemartin/system-design-primer", note: "Amazon: Obsess over Leadership Principles." },
+            { day: 70, type: "DSA", topic: "Launch Prep", tasks: ["Apply: Tier 1 Companies", "Apply: Tier 2 Companies (Warmup)"], article: "Levels.fyi: Salary Negotiation", link: "https://www.levels.fyi/blog/salary-negotiation.html", note: "Always negotiate. Know your BATNA." },
+            { day: 71, type: "DSA", topic: "Launch Prep", tasks: ["Mock: Negotiation", "Mock: Team Match"], article: "The Pragmatic Programmer", link: "#", note: "You are solving business problems, not just code problems." },
+            { day: 72, type: "Design", topic: "AI RAG System", tasks: ["Artifact: Embedding Pipeline", "DB: Vector DB (Pinecone/Milvus)", "Logic: Context Window Management", "Deep Dive: Hallucination Guardrails"], article: "Pinecone: Vector Search", link: "https://www.pinecone.io/learn/", note: "This is the 'Modern' Principal question. Know it well." }
+        ];
+
+        // --- APP LOGIC ---
+        const storageKey = 'northstar_v7_final';
+        let state = JSON.parse(localStorage.getItem(storageKey)) || {
+            completedTasks: [], 
+            currentDay: 1,
+            startDate: null,
+            skippedDays: 0
+        };
+
+        function init() {
+            // Restore inputs
+            if (state.startDate) {
+                document.getElementById('start-date-input').value = state.startDate;
+                document.getElementById('mobile-start-date').value = state.startDate;
+            }
+            document.getElementById('skipped-days-input').value = state.skippedDays || 0;
+            document.getElementById('mobile-skipped-days').value = state.skippedDays || 0;
+
+            calculateCurrentDay();
+            renderNav();
+            loadDay(state.currentDay);
+            updateProgress();
+            
+            // Attach Listeners
+            setupKeyboardListeners();
+        }
+
+        // --- KEYBOARD INTERACTIVITY ---
+        function setupKeyboardListeners() {
+            // Sidebar Navigation
+            const sidebarContainer = document.getElementById('sidebar-nav-container');
+            sidebarContainer.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (state.currentDay < 72) {
+                        loadDay(state.currentDay + 1);
+                        setTimeout(() => focusActiveDay(), 0);
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (state.currentDay > 1) {
+                        loadDay(state.currentDay - 1);
+                        setTimeout(() => focusActiveDay(), 0);
+                    }
+                }
+            });
+
+            // Objectives Container
+            const objectivesContainer = document.getElementById('objectives-container');
+            // We attach this listener dynamically in loadDay because the container is rebuilt
+        }
+
+        function focusActiveDay() {
+            // Find the element for the current day and focus it
+            // We need a reliable selector. We added IDs in renderNav
+            const el = document.getElementById(`nav-day-${state.currentDay}`);
+            if (el) el.focus();
+        }
+
+        function updateCampaignDate() {
+            const dateInput = document.getElementById('start-date-input').value;
+            const skipInput = document.getElementById('skipped-days-input').value;
+            
+            state.startDate = dateInput;
+            state.skippedDays = parseInt(skipInput) || 0;
+            saveState();
+            
+            calculateCurrentDay();
+            renderNav();
+        }
+        
+        function syncMobileInputs() {
+            document.getElementById('start-date-input').value = document.getElementById('mobile-start-date').value;
+            document.getElementById('skipped-days-input').value = document.getElementById('mobile-skipped-days').value;
+        }
+
+        function calculateCurrentDay() {
+            if (!state.startDate) {
+                document.getElementById('calculated-day-display').innerText = "-";
+                return;
+            }
+
+            const parts = state.startDate.split('-');
+            if(parts.length !== 3) return;
+            
+            const start = new Date(parts[0], parts[1]-1, parts[2]); 
+            const now = new Date();
+            
+            start.setHours(0,0,0,0);
+            now.setHours(0,0,0,0);
+
+            const diffTime = now - start;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            let calculated = diffDays + 1 - state.skippedDays;
+            
+            if (calculated < 1) calculated = 1; 
+            if (calculated > 72) calculated = 72;
+
+            state.calculatedDay = calculated;
+            document.getElementById('calculated-day-display').innerText = `Day ${calculated}`;
+        }
+
+        function jumpToToday() {
+            if (state.calculatedDay) {
+                loadDay(state.calculatedDay);
+                setTimeout(() => {
+                    const el = document.getElementById(`nav-day-${state.calculatedDay}`);
+                    if(el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el.focus();
+                    }
+                }, 100);
+            } else {
+                alert("Please set a Start Date first.");
+            }
+        }
+
+        function renderNav() {
+            const createLink = (d) => {
+                const isPassed = state.calculatedDay && d.day < state.calculatedDay;
+                const isToday = state.calculatedDay && d.day === state.calculatedDay;
+                const isSelected = state.currentDay === d.day;
+                
+                let bgClass = 'text-slate-400 hover:bg-slate-800 hover:text-white';
+                let indicator = '';
+
+                if (isSelected) {
+                    bgClass = 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50 outline-none ring-2 ring-indigo-400 ring-offset-2 ring-offset-slate-900';
+                } else if (isPassed) {
+                    bgClass = 'text-slate-500 line-through opacity-60 hover:opacity-100 hover:line-through-0 hover:bg-slate-800';
+                    indicator = '<i class="fa-solid fa-check text-[10px] ml-2 text-emerald-500"></i>';
+                } else if (isToday) {
+                    bgClass = 'border border-indigo-500 text-indigo-400 bg-indigo-900/10';
+                    indicator = '<span class="ml-2 w-2 h-2 rounded-full bg-indigo-500 animate-pulse inline-block"></span>';
+                }
+                
+                // Roving TabIndex: Only selected day gets tabindex=0
+                const tabIndex = isSelected ? 0 : -1;
+
+                return `
+                <div id="nav-day-${d.day}" 
+                     onclick="loadDay(${d.day})" 
+                     onkeydown="if(event.key === 'Enter' || event.key === ' ') { loadDay(${d.day}); event.preventDefault(); }"
+                     tabindex="${tabIndex}"
+                     class="nav-item cursor-pointer group flex items-center justify-between px-3 py-2.5 rounded text-xs transition-all mb-1 ${bgClass}">
+                    <div class="flex items-center">
+                        <span class="font-mono ${isToday ? 'font-bold' : ''}">Day ${d.day}</span>
+                        ${indicator}
+                    </div>
+                    <span class="opacity-70 text-[10px] uppercase tracking-wider ${d.type === 'Design' ? 'text-purple-300' : ''}">${d.type}</span>
+                </div>
+            `};
+
+            document.getElementById('nav-phase-1').innerHTML = planData.slice(0, 24).map(createLink).join('');
+            document.getElementById('nav-phase-2').innerHTML = planData.slice(24, 48).map(createLink).join('');
+            document.getElementById('nav-phase-3').innerHTML = planData.slice(48, 72).map(createLink).join('');
+        }
+
+        function loadDay(day) {
+            state.currentDay = day;
+            const data = planData.find(d => d.day === day);
+            const content = document.getElementById('day-content');
+            
+            content.classList.remove('fade-in');
+            void content.offsetWidth;
+            content.classList.add('fade-in');
+
+            // --- HEADER ---
+            let html = `
+                <div class="mb-12">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-[10px] font-bold uppercase text-slate-400 font-mono">Day ${data.day}</span>
+                        <span class="px-2 py-1 ${data.type === 'Design' ? 'bg-purple-900/30 border-purple-800 text-purple-400' : 'bg-blue-900/30 border-blue-800 text-blue-400'} border rounded text-[10px] font-bold uppercase tracking-widest">${data.type} Protocol</span>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight font-sans">${data.topic}</h2>
+                </div>
+            `;
+
+            // --- OBJECTIVES (Container ID for focus management) ---
+            html += `<div id="objectives-container" class="space-y-4 mb-12 outline-none">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-slate-800 pb-2">
+                    <i class="fa-solid fa-crosshairs"></i> Principal Objectives
+                </h3>`;
+            
+            html += data.tasks.map((task, idx) => {
+                const taskId = `${day}-${idx}`;
+                const isChecked = state.completedTasks.includes(taskId);
+                const tabIndex = idx === 0 ? 0 : -1; // Roving tab index start
+                return `
+                    <label class="objective-item flex items-start gap-5 p-5 bg-slate-900/50 border border-slate-800 rounded-xl hover:border-indigo-500/30 hover:bg-slate-800 transition cursor-pointer group shadow-sm focus-within:ring-2 focus-within:ring-indigo-500">
+                        <div class="relative flex items-center justify-center mt-1">
+                            <input type="checkbox" 
+                                   class="peer appearance-none w-6 h-6 border-2 border-slate-600 rounded-md bg-slate-950 checked:bg-indigo-600 checked:border-indigo-600 transition focus:outline-none"
+                                   ${isChecked ? 'checked' : ''} 
+                                   onchange="toggleTask('${taskId}')"
+                                   tabindex="${tabIndex}"
+                                   data-idx="${idx}">
+                            <i class="fa-solid fa-check text-white text-xs absolute opacity-0 peer-checked:opacity-100 pointer-events-none transform scale-0 peer-checked:scale-100 transition-transform"></i>
+                        </div>
+                        <div class="text-sm font-medium text-slate-300 group-hover:text-white transition leading-relaxed ${isChecked ? 'line-through text-slate-600' : ''}">${task}</div>
+                    </label>
+                `;
+            }).join('');
+            html += `</div>`;
+
+            // --- READING ---
+            html += `
+                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/30 border border-slate-800 p-8 group hover:border-indigo-500/30 transition-all shadow-xl">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition duration-500 transform group-hover:scale-110">
+                        <i class="fa-solid fa-book-journal-whills text-9xl text-white"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                             <i class="fa-solid fa-book-open"></i> Mandatory Reading
+                        </h3>
+                        <h4 class="text-2xl font-bold text-white mb-6 pr-12 leading-tight">${data.article}</h4>
+                        <a href="${data.link}" target="_blank" tabindex="0" class="inline-flex items-center gap-3 px-5 py-2.5 bg-slate-100 hover:bg-white text-slate-900 text-xs font-bold rounded-lg transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 focus:ring-2 focus:ring-emerald-400">
+                            Access Resource <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            
+            // Sidebar Updates
+            document.getElementById('note-display').innerHTML = `"${data.note}"`;
+            document.getElementById('focus-display').innerText = data.topic;
+            document.getElementById('mobile-day-display').innerText = `Day ${day}`;
+            
+            let status = "Inactive";
+            if (state.calculatedDay) {
+                if (day < state.calculatedDay) status = "Completed";
+                else if (day === state.calculatedDay) status = "Active Today";
+                else status = "Upcoming";
+            }
+            document.getElementById('mobile-status-display').innerText = status;
+
+            renderNav();
+            
+            // Re-attach listeners for objectives
+            const objContainer = document.getElementById('objectives-container');
+            if (objContainer) {
+                objContainer.addEventListener('keydown', handleObjectivesKeydown);
+            }
+        }
+        
+        function handleObjectivesKeydown(e) {
+            const inputs = Array.from(document.querySelectorAll('#objectives-container input[type="checkbox"]'));
+            const active = document.activeElement;
+            const idx = inputs.indexOf(active);
+            
+            if (idx === -1) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const next = inputs[idx + 1];
+                if (next) {
+                    active.setAttribute('tabindex', '-1');
+                    next.setAttribute('tabindex', '0');
+                    next.focus();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prev = inputs[idx - 1];
+                if (prev) {
+                    active.setAttribute('tabindex', '-1');
+                    prev.setAttribute('tabindex', '0');
+                    prev.focus();
+                }
+            }
+        }
+
+        function toggleTask(id) {
+            if (state.completedTasks.includes(id)) state.completedTasks = state.completedTasks.filter(t => t !== id);
+            else state.completedTasks.push(id);
+            // Don't reload day completely to preserve focus, just update visual state if needed
+            // But for simplicity in this V1, reloading is safer for state sync, we just need to re-focus
+            const focusedIdx = document.activeElement.getAttribute('data-idx');
+            loadDay(state.currentDay);
+            if (focusedIdx) {
+                const el = document.querySelector(`input[data-idx="${focusedIdx}"]`);
+                if(el) el.focus();
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalTasks = planData.reduce((acc, curr) => acc + curr.tasks.length, 0);
+            const completed = state.completedTasks.length;
+            const pct = Math.round((completed / totalTasks) * 100);
+            
+            document.getElementById('progress-text').innerText = `${pct}%`;
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+            saveState();
+        }
+
+        function changeDay(offset) {
+            const newDay = state.currentDay + offset;
+            if(newDay >= 1 && newDay <= 72) loadDay(newDay);
+        }
+
+        function toggleMobileConfig() {
+            const modal = document.getElementById('mobile-config');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function saveState() { localStorage.setItem(storageKey, JSON.stringify(state)); }
+        
+        function resetData() { 
+            if(confirm("CRITICAL: This will wipe all progress. Continue?")) {
+                localStorage.removeItem(storageKey); 
+                location.reload(); 
+            }
+        }
+
+        // Init
+        init();
+
+    </script>
+</body>
+</html>
