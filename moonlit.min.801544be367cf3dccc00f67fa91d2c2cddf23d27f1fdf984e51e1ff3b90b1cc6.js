@@ -1,0 +1,12 @@
+(function(){"use strict";const e=document.querySelector("header");let r=0,t=!1;function c(){t||(window.requestAnimationFrame(()=>{const n=window.pageYOffset;e&&(n>10?e.classList.add("scrolled"):e.classList.remove("scrolled"),n>300?e.classList.add("compact"):e.classList.remove("compact")),r=n,t=!1}),t=!0)}window.addEventListener("scroll",c,{passive:!0});const l={root:null,rootMargin:"0px 0px -50px 0px",threshold:.1},s=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&(e.target.classList.add("visible"),s.unobserve(e.target))})},l);document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".moonlit-fade-in").forEach(e=>{s.observe(e)})});const o=window.matchMedia("(prefers-reduced-motion: reduce)");if(!o.matches&&window.innerWidth>1024){const e=document.createElement("div");e.className="cursor-glow",e.style.cssText=`
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--moon-accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    `,document.body.appendChild(e);let s=0,o=0,t=0,n=0;function i(e,t,n){return e+(t-e)*n}function a(){t=i(t,s,.1),n=i(n,o,.1),e.style.left=`${t}px`,e.style.top=`${n}px`,requestAnimationFrame(a)}document.addEventListener("mousemove",t=>{s=t.clientX,o=t.clientY,e.style.opacity="1"}),document.addEventListener("mouseleave",()=>{e.style.opacity="0"}),a()}document.querySelectorAll('a[href^="#"]').forEach(t=>{t.addEventListener("click",function(t){const n=this.getAttribute("href");if(n==="#")return;const s=document.querySelector(n);if(s){t.preventDefault();const n=e?e.offsetHeight:60,o=s.getBoundingClientRect().top+window.pageYOffset-n;window.scrollTo({top:o,behavior:"smooth"})}})});const n=document.querySelector(".theme-switch");n&&n.addEventListener("click",()=>{const e=n.querySelector("i");e&&(e.style.transform="rotate(360deg)",setTimeout(()=>{e.style.transform=""},300))}),!o.matches&&window.innerWidth>1024&&document.querySelectorAll(".moonlit-card").forEach(e=>{e.addEventListener("mousemove",t=>{const n=e.getBoundingClientRect(),s=t.clientX-n.left,o=t.clientY-n.top,i=n.width/2,a=n.height/2,r=(o-a)/20,c=(i-s)/20;e.style.transform=`perspective(1000px) rotateX(${r}deg) rotateY(${c}deg) translateY(-2px)`}),e.addEventListener("mouseleave",()=>{e.style.transform=""})})})()
